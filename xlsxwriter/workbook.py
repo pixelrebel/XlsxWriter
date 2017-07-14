@@ -1027,10 +1027,13 @@ class Workbook(xmlwriter.XMLwriter):
 
             header_image_count = len(sheet.header_images)
             footer_image_count = len(sheet.footer_images)
+            first_header_image_count = len(sheet.first_header_images)
+            first_footer_image_count = len(sheet.first_footer_images)
             has_drawing = False
 
             if not (chart_count or image_count or shape_count
-                    or header_image_count or footer_image_count):
+                    or header_image_count or footer_image_count
+                    or first_header_image_count or first_footer_image_count):
                 continue
 
             # Don't increase the drawing_id header/footer images.
@@ -1080,6 +1083,38 @@ class Workbook(xmlwriter.XMLwriter):
                 filename = sheet.footer_images[index][0]
                 image_data = sheet.footer_images[index][1]
                 position = sheet.footer_images[index][2]
+
+                (image_type, width, height, name, x_dpi, y_dpi) = \
+                    self._get_image_properties(filename, image_data)
+
+                image_ref_id += 1
+
+                sheet._prepare_header_image(image_ref_id, width, height,
+                                            name, image_type, position,
+                                            x_dpi, y_dpi)
+
+            # Prepare the first header images.
+            for index in range(first_header_image_count):
+
+                filename = sheet.first_header_images[index][0]
+                image_data = sheet.first_header_images[index][1]
+                position = sheet.first_header_images[index][2]
+
+                (image_type, width, height, name, x_dpi, y_dpi) = \
+                    self._get_image_properties(filename, image_data)
+
+                image_ref_id += 1
+
+                sheet._prepare_header_image(image_ref_id, width, height,
+                                            name, image_type, position,
+                                            x_dpi, y_dpi)
+
+            # Prepare the first footer images.
+            for index in range(first_footer_image_count):
+
+                filename = sheet.first_footer_images[index][0]
+                image_data = sheet.first_footer_images[index][1]
+                position = sheet.first_footer_images[index][2]
 
                 (image_type, width, height, name, x_dpi, y_dpi) = \
                     self._get_image_properties(filename, image_data)
